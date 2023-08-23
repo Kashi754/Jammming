@@ -1,17 +1,35 @@
 import React, {useState} from 'react';
 import Tracklist from '../TrackList/Tracklist';
+import './Playlist.css';
 
 function Playlist(props) {
 
+    const [playlistName, setPlaylistName] = useState('');
+
+    function handlePlaylistName(e) {
+        setPlaylistName(e.target.value);
+    };
+
+    function handleSubmit(e) {
+        e.preventDefault();
+        alert(`You have submitted ${playlistName} to spotify!`)
+    }
+
     return (
-        <div className='Playlist'>
-            <h2>Playlist</h2>
+        <form className='Playlist' onSubmit={handleSubmit}>
+            <input 
+                id='playlistName' 
+                type='text' value={playlistName} 
+                onChange={handlePlaylistName} 
+                placeholder='Playlist Name'
+            />
             <Tracklist 
                 tracks={props.playlistTracks}
                 isRemoval={true}
                 onRemove={props.onRemove}
             />
-        </div>
+            <button className='save-button' type='submit'>SAVE TO SPOTIFY</button>
+        </form>
     )
 
 }

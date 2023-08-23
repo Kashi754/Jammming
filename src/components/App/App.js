@@ -40,18 +40,21 @@ function App() {
 
   return (
     <div className='App'>
+      <header>
+        <h1>Ja<span class='mmm'>mmm</span>ing</h1>
+      </header>
+      
       <SearchBar />
       <div className="App-playlist">
         <SearchResults searchResults={searchResults} onAdd={addTrack} />
         <Playlist 
           playlistName={playlistName}
-          playlistTracks={searchResults}
+          playlistTracks={searchResults.slice(0, 3)}
           onNameChange={updatePlaylistName}
           onRemove={removeTrack}
           onSave={savePlaylist}
         />
       </div>
-    
     </div>
   );
 }

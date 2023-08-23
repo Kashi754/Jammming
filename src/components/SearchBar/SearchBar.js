@@ -1,4 +1,5 @@
 import React, {useState} from 'react';
+import './SearchBar.css';
 
 function SearchBar(props) {
     const [search, setSearch] = useState('');
@@ -18,7 +19,7 @@ function SearchBar(props) {
                 onChange={e => setSearch(e.target.value)}
                 placeholder='Search for a song'
             />
-            <button type='submit'>Search</button>
+            <button className='search-button' type='submit'>SEARCH</button>
         </form>
     );
 }
