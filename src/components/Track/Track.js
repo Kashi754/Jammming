@@ -1,5 +1,7 @@
 import React, {useCallback} from 'react';
 import './Track.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {faCirclePlus, faCircleMinus} from '@fortawesome/free-solid-svg-icons';
 
 function Track(props) {
     const addTrack = useCallback(
@@ -19,13 +21,13 @@ function Track(props) {
         if(props.isRemoval) {
             return (
                 <button className='Track-action' onClick={removeTrack}>
-                    -
+                    <FontAwesomeIcon className = 'icon' icon={faCircleMinus} />
                 </button>
             );
         } else {
             return (
                 <button className='Track-action' onClick={addTrack}>
-                    +
+                    <FontAwesomeIcon className = 'icon' icon={faCirclePlus} />
                 </button>
             );
         }
