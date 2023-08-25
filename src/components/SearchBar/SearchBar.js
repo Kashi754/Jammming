@@ -3,14 +3,13 @@ import './SearchBar.css';
 
 function SearchBar(props) {
     const [search, setSearch] = useState('');
-
-    function handleSubmit(e) {
-        e.preventDefault();
-        alert(`You have searched for ${search}`);
-    };
+    
+    function clickHandler(e) {
+        props.handleSubmit(e, search);
+    }
     
     return (
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={clickHandler} query={search}>
             <input 
                 id='search'
                 name='search'

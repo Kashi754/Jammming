@@ -20,13 +20,13 @@ function Track(props) {
     function trackAction() {
         if(props.isRemoval) {
             return (
-                <button className='Track-action' onClick={removeTrack}>
+                <button className='Track-action' type='button' onClick={removeTrack}>
                     <FontAwesomeIcon className = 'icon' icon={faCircleMinus} />
                 </button>
             );
         } else {
             return (
-                <button className='Track-action' onClick={addTrack}>
+                <button className='Track-action' type='button' onClick={addTrack}>
                     <FontAwesomeIcon className = 'icon' icon={faCirclePlus} />
                 </button>
             );
@@ -38,7 +38,7 @@ function Track(props) {
             <div className = 'track-information'>
                 <h3>{props.track.name}</h3>
                 <p>
-                    {props.track.artist} | {props.track.album}
+                    {props.track.artists[0].name} | {props.track.album.name}
                 </p>
             </div>
             {trackAction()}

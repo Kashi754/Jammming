@@ -1,26 +1,28 @@
-import React, {useState} from 'react';
+import React, {useState, useCallback} from 'react';
 import Tracklist from '../TrackList/Tracklist';
 import './Playlist.css';
 
 function Playlist(props) {
 
-    const [playlistName, setPlaylistName] = useState('');
-
-    function handlePlaylistName(e) {
-        setPlaylistName(e.target.value);
-    };
+    const onNameChange = useCallback(
+        (event) => {
+            props.onNameChange(event);
+        }, 
+        [props.onNameChange, props.playlistName]
+    );
 
     function handleSubmit(e) {
         e.preventDefault();
-        alert(`You have submitted ${playlistName} to spotify!`)
+        props.onSave(e);
     }
 
     return (
         <form className='Playlist' onSubmit={handleSubmit}>
             <input 
                 id='playlistName' 
-                type='text' value={playlistName} 
-                onChange={handlePlaylistName} 
+                type='text' 
+                value={props.playlistName} 
+                onChange={onNameChange}
                 placeholder='Playlist Name'
             />
             <Tracklist 

@@ -3,60 +3,152 @@ import './App.css';
 import SearchBar from '../SearchBar/SearchBar';
 import SearchResults from '../SearchResults/SearchResults';
 import Playlist from '../Playlist/Playlist';
+import React, { useState, useEffect, useRef } from 'react';
+import * as helperFunctions from '../../helperFunctions'
+import { saveAs } from 'file-saver';
 
-const searchResults = [
-  {name: 'Cemetery Bloom', artist: 'Parkway Drive', album: "Reverence"},
-  {name: 'Chronos', artist: 'Parkway Drive', album: "Reverence"},
-  {name: 'The Void', artist: 'Parkway Drive', album: "Reverence"},
-  {name: 'Prey', artist: 'Parkway Drive', album: "Reverence"},
-  {name: 'I Hope You Rot', artist: 'Parkway Drive', album: "Reverence"},
-  {name: 'The Colour of Leaving', artist: 'Parkway Drive', album: "Reverence"},
-  {name: 'Absolute Power', artist: 'Parkway Drive', album: "Reverence"},
-  {name: 'Shadow Boxing', artist: 'Parkway Drive', album: "Reverence"},
-  {name: 'Wishing Wells', artist: 'Parkway Drive', album: "Reverence"},
-  {name: 'In Blood', artist: 'Parkway Drive', album: "Reverence"},
-];
-
-const playlistName = 'Test Playlist';
-
-
+const handleDownload = (text) => {
+  const file = new Blob([text], { type: 'text/plain;charset=utf-8' });
+  saveAs(file, 'debug.txt');
+};
 
 function App() {
-  function addTrack() {
-    return;
-  };
+  const authEndpoint = 'https://accounts.spotify.com/authorize';
+  const clientId = 'a80c55af62d544179f100356c2cad383';
+  const redirectUri = 'http://localhost:3000/';
+  const responseType = 'token';
+
+  const [playlistName, setPlaylistName] = useState('');
+  const [playlistTracks, setPlaylistTracks] = useState([]);
+  const [uriArray, setUriArray] = useState([]);
+  const [token, setToken] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [prevPage, setPrevPage] = useState(null);
+  const [nextPage, setNextPage] = useState(null);
+
+  const initialized = useRef(false);
+
+  searchResults.forEach(result => result.key = searchResults.indexOf(result));
+
+  useEffect(() => {
+    const hash = window.location.hash;
+    let tokenString = window.localStorage.getItem('token');
+
+    if (!initialized.current) {
+      initialized.current = true;
   
-  function updatePlaylistName() {
-    return;
+      if(!tokenString && hash) {
+        
+        try {
+          tokenString = hash.substring(1)
+            .split('&')
+            .find(elem => elem.startsWith('access_token'))
+            .split('=')[1];
+    
+            window.location.hash = '';
+            window.localStorage.setItem('token', tokenString);
+        } catch (error) {
+          console.log(error);
+        }
+      }
+      setToken(tokenString);
+    }
+  }, []);
+
+  const logout = () => {
+    setToken("");
+    window.localStorage.removeItem("token");
+}
+
+ 
+
+  function updatePlaylistName(e) {
+    setPlaylistName(e.target.value);
   };
+
+
+
+  function addTrack(track) {
+    if(playlistTracks.indexOf(track) === -1) {
+      track.index = searchResults.indexOf(track);
+      setPlaylistTracks((prev) => {
+        return [track, ...prev];
+      });
+      
+      console.log(playlistTracks[0]);
+
+      setUriArray((prev) => {
+        return [...prev, track.uri];
+      });
+
+      setSearchResults(searchResults.filter(item => item !== track));
+    }
+  }
   
-  function removeTrack() {
-    return;
+  function removeTrack(track) {
+    searchResults.splice(track.index, 0, track);
+
+    setPlaylistTracks((prev) => {
+      return prev.filter(item => item !== track);
+    });
+    setUriArray((prev) => {
+      return prev.filter(item => item !== track.uri);
+    });
   };
   
   function savePlaylist() {
-    return;
+    //const playlist = function to create playlist
+    //const playlistId = playlist.id
+    //Add function to post playlist to Spotify
+    setPlaylistTracks([]);
+    setUriArray([]);
+    setPlaylistName('');
   }
+
+  async function handleSubmit(e, search) {
+    e.preventDefault();
+    const uri = helperFunctions.urlBuilder(search)
+    const results = await helperFunctions.getTracks(token, uri);
+    setSearchResults(results.tracks);
+    setPrevPage(results.prevURI);
+    setNextPage(results.nextURI);
+    //handleDownload(JSON.stringify(searchResults, false, "\t"));
+  };
 
   return (
     <div className='App'>
       <header>
-        <h1>Ja<span class='mmm'>mmm</span>ing</h1>
+      {!token ?
+        <button>
+          <a href={`${authEndpoint}?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=${responseType}`}
+          >Login to Spotify</a>
+        </button> : 
+        <button onClick={logout}>Logout</button>}
+        <h1>Ja<span className='mmm'>mmm</span>ing</h1>
       </header>
       
-      <main>
-        <SearchBar />
-        <div className="App-playlist">
+      
+        {!token ? 
+        <main>
+          <div className="App-playlist">
+            <h2>Please Log-in to Spotify</h2>
+          </div> 
+        </main> :
+        <main>
+          <SearchBar handleSubmit={handleSubmit} />
+          <div className="App-playlist">
           <SearchResults searchResults={searchResults} onAdd={addTrack} />
           <Playlist 
             playlistName={playlistName}
-            playlistTracks={searchResults.slice(0, 3)}
+            playlistTracks={playlistTracks}
             onNameChange={updatePlaylistName}
             onRemove={removeTrack}
             onSave={savePlaylist}
           />
-        </div>
-      </main>
+          </div>
+        </main>}
+        
+      
     </div>
   );
 }
