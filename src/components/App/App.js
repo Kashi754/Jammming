@@ -12,6 +12,10 @@ const handleDownload = (text) => {
   saveAs(file, 'debug.txt');
 };
 
+let currentPage = '';
+let prevPage = '';
+let nextPage = '';
+
 function App() {
   const authEndpoint = 'https://accounts.spotify.com/authorize';
   const clientId = 'a80c55af62d544179f100356c2cad383';
@@ -23,14 +27,16 @@ function App() {
   const [uriArray, setUriArray] = useState([]);
   const [token, setToken] = useState('');
   const [searchResults, setSearchResults] = useState([]);
-  const [prevPage, setPrevPage] = useState(null);
-  const [nextPage, setNextPage] = useState(null);
+  
 
   const initialized = useRef(false);
 
-  searchResults.forEach(result => result.key = searchResults.indexOf(result));
-
   useEffect(() => {
+    let timer;
+    if(token) {
+      timer = setTimeout(() => logout(), 3600000);
+    }
+    
     const hash = window.location.hash;
     let tokenString = window.localStorage.getItem('token');
 
@@ -53,12 +59,13 @@ function App() {
       }
       setToken(tokenString);
     }
-  }, []);
+    return () => clearTimeout(timer);
+  }, [token]);
 
   const logout = () => {
     setToken("");
     window.localStorage.removeItem("token");
-}
+  };
 
  
 
@@ -74,8 +81,6 @@ function App() {
       setPlaylistTracks((prev) => {
         return [track, ...prev];
       });
-      
-      console.log(playlistTracks[0]);
 
       setUriArray((prev) => {
         return [...prev, track.uri];
@@ -83,14 +88,18 @@ function App() {
 
       setSearchResults(searchResults.filter(item => item !== track));
     }
-  }
+  };
   
   function removeTrack(track) {
-    searchResults.splice(track.index, 0, track);
+
+    if(track.currentURI === currentPage) {
+      searchResults.splice(track.index, 0, track);
+    };
 
     setPlaylistTracks((prev) => {
       return prev.filter(item => item !== track);
     });
+
     setUriArray((prev) => {
       return prev.filter(item => item !== track.uri);
     });
@@ -103,17 +112,33 @@ function App() {
     setPlaylistTracks([]);
     setUriArray([]);
     setPlaylistName('');
-  }
+  };
 
   async function handleSubmit(e, search) {
     e.preventDefault();
     const uri = helperFunctions.urlBuilder(search)
     const results = await helperFunctions.getTracks(token, uri);
-    setSearchResults(results.tracks);
-    setPrevPage(results.prevURI);
-    setNextPage(results.nextURI);
-    //handleDownload(JSON.stringify(searchResults, false, "\t"));
+  
+    setSearchResults(results[0]);
+    currentPage = uri;
+    nextPage = results[1];
   };
+
+  async function changePage(page) {
+    const results = await helperFunctions.getTracks(token, page);
+    const newResults = results[0].slice();
+    for (let i = results[0].length - 1; i >= 0; i--) {
+      for (let j = 0; j < playlistTracks.length; j++) {
+        if(playlistTracks[j].id == results[0][i].id) {
+          newResults.splice(i, 1)
+        }
+      }
+    };
+    setSearchResults(newResults);
+    nextPage = results[1];
+    currentPage = results[2];
+    prevPage = results[3];
+  }
 
   return (
     <div className='App'>
@@ -137,7 +162,13 @@ function App() {
         <main>
           <SearchBar handleSubmit={handleSubmit} />
           <div className="App-playlist">
-          <SearchResults searchResults={searchResults} onAdd={addTrack} />
+          <SearchResults 
+            searchResults={searchResults} 
+            prevPage={prevPage}
+            nextPage={nextPage}
+            changePage={changePage}
+            onAdd={addTrack} 
+          />
           <Playlist 
             playlistName={playlistName}
             playlistTracks={playlistTracks}

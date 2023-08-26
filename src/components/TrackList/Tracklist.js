@@ -7,14 +7,14 @@ function Tracklist(props) {
         return (
             <div className='TrackList'>
                 {props.tracks.map((track) => {
-                    console.log(track);
                     return(
                         <Track 
                         track={track}
                         onAdd={props.onAdd}
                         isRemoval={props.isRemoval}
                         onRemove={props.onRemove}
-                        key={track.key}
+                        id={track.id}
+                        key={track.id}
                     />
                     );
                 })}          
