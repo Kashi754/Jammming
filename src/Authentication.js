@@ -51,7 +51,7 @@ generateCodeChallenge(codeVerifier).then(codeChallenge => {
 });
 }
 
-export function requestAccessToken() {
+export async function requestAccessToken() {
   const urlParams = new URLSearchParams(window.location.search);
   let code = urlParams.get('code');
 
@@ -66,7 +66,7 @@ export function requestAccessToken() {
   });
 
 
-  const response = fetch('https://accounts.spotify.com/api/token', {
+  const response = await fetch('https://accounts.spotify.com/api/token', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'
@@ -80,13 +80,16 @@ export function requestAccessToken() {
         return response.json();
       })
       .then(data => {
-        localStorage.setItem('access_token', data.access_token);
+        /* localStorage.setItem('access_token', data.access_token);
         localStorage.setItem('refresh_token', data.refresh_token);
-        localStorage.setItem('expires_at', data.expires_at);
+        localStorage.setItem('expires_at', data.expires_at); */
+        return data.access_token;
       })
       .catch(error => {
         console.log(error);
       });
+
+      return response;
 }
 
 export async function refreshToken() {

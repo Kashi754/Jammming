@@ -31,42 +31,43 @@ function App() {
   const [playlistTracks, setPlaylistTracks] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
   const [accessToken, setAccessToken] = useState(null);
-  let token = null;
+  const [userId, setUserId] = useState(null);
   
   let uriArray = useRef([]);
   const initialized = useRef(false);
-  const loginRequest = useRef(false);
-  const userId = useRef('');
   const playlistId = useRef('');
-  const windowUrl = useRef(window.location.href.toString());
 
   
 
   useEffect(() => {
-    if (!initialized.current) {
-      if(localStorage.getItem('login_request')) {
-        Authentication.requestAccessToken();
-        localStorage.setItem('loginRequest', false);
-        initialized.current = true;
-      }
+    const userAuthentication = async () => {
+      await Authentication.requestAccessToken()
+        .then(token => {
+          setAccessToken(token);
+          return helperFunctions.getUserId(token);
+        })
+        .then(id => {
+          console.log(id);
+          setUserId(id);
+        })
+        .catch(error => console.log(error));
+    };
+
+    if (!initialized.current && localStorage.getItem('login_request') == '1') {
+      userAuthentication();
+      initialized.current = true;
+      localStorage.getItem('login_request', 0);
     }
   },[]);
 
-  useEffect(() => {
+/*   useEffect(() => {
     setAccessToken(localStorage.getItem('access_token'));
-  },[localStorage.getItem('accessToken')]);
+  },[localStorage.getItem('accessToken')]); */
 
-  useEffect(() => {
-    if(accessToken) {
-      helperFunctions.getUserId(accessToken);
-      userId.current = localStorage.getItem('user_id');
-    }
-    
-  }, [accessToken, localStorage.getItem(accessToken)]);
   
   const login = () => {
+    localStorage.setItem('login_request', 1);
     Authentication.authorize();
-    localStorage.setItem('login_request', true);
   };
 
   const logout = () => {
@@ -111,9 +112,7 @@ function App() {
   };
   
   async function savePlaylist(playlistName) {
-    userId.current = localStorage.getItem('user_id');
-    setAccessToken(localStorage.getItem('access_token'));
-    helperFunctions.createPlaylist(userId.current, playlistName, uriArray.current, accessToken);
+    helperFunctions.createPlaylist(userId, playlistName, uriArray.current, accessToken);
     setPlaylistTracks([]);
     uriArray.current = [];
     playlistId.current = '';

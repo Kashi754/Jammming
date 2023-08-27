@@ -22,13 +22,13 @@ export async function getUserId(token) {
             return response.json();
         })
         .then(data => {
-            const userId = data.id;
-            localStorage.setItem('user_id', userId);
-            return userId;
+            return data.id;
+            /* localStorage.setItem('user_id', userId); */
         })
         .catch(error => {
             console.log(error);
-        })
+        });
+    return response;
 }
 
 export function createPlaylist(userId, playlistName, uriArray, token) {  
@@ -60,10 +60,7 @@ export function createPlaylist(userId, playlistName, uriArray, token) {
 }
 
 async function submitPlaylist(playlistId, uriArray, token) {
-    console.log('_____________')
-    console.log(playlistId);
-    console.log(uriArray);
-    console.log(token);
+
     try {
         const response = await fetch(baseUrl + `/playlists/${playlistId}/tracks/`, {
             method: 'POST',
@@ -117,37 +114,5 @@ export async function getTracks(token, uri) {
     } catch(error) {
         console.log(error);
     }
-}
-
-function generateRandomString(length) {
-    let text = '';
-    let possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  
-    for (let i = 0; i < length; i++) {
-      text += possible.charAt(Math.floor(Math.random() * possible.length));
-    }
-    return text;
-};
-
-async function login(clientId) {
-    const redirectUri = 'http://localhost:3000/';
-    let codeVerifier = generateRandomString(128);
-
-    async function generateCodeChallenge(codeVerifier) {
-        function base64encode(string) {
-          return btoa(String.fromCharCode.apply(null, new Uint8Array(string)))
-            .replace(/\+/g, '-')
-            .replace(/\//g, '_')
-            .replace(/=+$/, '');
-        }
-      
-        const encoder = new TextEncoder();
-        const data = encoder.encode(codeVerifier);
-        const digest = await window.crypto.subtle.digest('SHA-256', data);
-      
-        return base64encode(digest);
-      }
-      
-
 }
 
