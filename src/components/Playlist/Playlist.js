@@ -1,19 +1,14 @@
 import React, {useState, useCallback} from 'react';
 import Tracklist from '../TrackList/Tracklist';
 import './Playlist.css';
+import { func } from 'prop-types';
 
 function Playlist(props) {
-
-    const onNameChange = useCallback(
-        (event) => {
-            props.onNameChange(event);
-        }, 
-        [props.onNameChange, props.playlistName]
-    );
+    const [playlistName, setPlaylistName] = useState('');
 
     function handleSubmit(e) {
         e.preventDefault();
-        props.onSave(e);
+        props.onSave(playlistName);
     }
 
     return (
@@ -21,8 +16,8 @@ function Playlist(props) {
             <input 
                 id='playlistName' 
                 type='text' 
-                value={props.playlistName} 
-                onChange={onNameChange}
+                value={playlistName} 
+                onChange={e => setPlaylistName(e.target.value)}
                 placeholder='Playlist Name'
             />
             <Tracklist 
