@@ -4,11 +4,10 @@ import './Playlist.css';
 import { func } from 'prop-types';
 
 function Playlist(props) {
-    const [playlistName, setPlaylistName] = useState('');
 
     function handleSubmit(e) {
         e.preventDefault();
-        props.onSave(playlistName);
+        props.onSave(props.playlistName);
     }
 
     return (
@@ -16,8 +15,8 @@ function Playlist(props) {
             <input 
                 id='playlistName' 
                 type='text' 
-                value={playlistName} 
-                onChange={e => setPlaylistName(e.target.value)}
+                value={props.playlistName} 
+                onChange={props.onNameChange}
                 placeholder='Playlist Name'
             />
             <Tracklist 

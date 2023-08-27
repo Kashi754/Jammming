@@ -5,7 +5,6 @@ import SearchResults from '../SearchResults/SearchResults';
 import Playlist from '../Playlist/Playlist';
 import React, { useState, useEffect, useRef } from 'react';
 import * as helperFunctions from '../../helperFunctions';
-import * as Authentication from '../../Authentication';
 import { saveAs } from 'file-saver';
 
 const handleDownload = (text) => {
@@ -30,18 +29,22 @@ function App() {
   const [playlistName, setPlaylistName] = useState('');
   const [playlistTracks, setPlaylistTracks] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
-  const [accessToken, setAccessToken] = useState(null);
-  const [userId, setUserId] = useState(null);
+  const [accessToken, setAccessToken] = useState('');
+  const [userId, setUserId] = useState('');
   
   let uriArray = useRef([]);
   const initialized = useRef(false);
   const playlistId = useRef('');
 
+  function handleClose() {
+    if(localStorage.getItem('access_token')) {
+      logout();
+    }
+  }
   
-
   useEffect(() => {
     const userAuthentication = async () => {
-      await Authentication.requestAccessToken()
+      await helperFunctions.requestAccessToken()
         .then(token => {
           setAccessToken(token);
           return helperFunctions.getUserId(token);
@@ -58,25 +61,29 @@ function App() {
       initialized.current = true;
       localStorage.getItem('login_request', 0);
     }
+
+    window.addEventListener('beforeunload', handleClose);
+
+    return () => {
+      window.removeEventListener('beforeUnload', handleClose);
+    };
   },[]);
-
-/*   useEffect(() => {
-    setAccessToken(localStorage.getItem('access_token'));
-  },[localStorage.getItem('accessToken')]); */
-
   
   const login = () => {
     localStorage.setItem('login_request', 1);
-    Authentication.authorize();
+    helperFunctions.authorize();
   };
 
   const logout = () => {
-    setAccessToken(null);
+    setAccessToken('');
     initialized.current = false;
     localStorage.clear();
   };
 
- 
+  /* window.addEventListener("beforeunload", (event) => {
+    logout();
+    console.log("You have logged out!");
+  }); */
 
   function updatePlaylistName(e) {
     setPlaylistName(e.target.value);
@@ -123,7 +130,7 @@ function App() {
     e.preventDefault();
     const uri = helperFunctions.urlBuilder(search)
     const results = await helperFunctions.getTracks(accessToken, uri);
-  
+    setPlaylistName('');
     setSearchResults(results[0]);
     currentPage = uri;
     nextPage = results[1];
