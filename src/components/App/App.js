@@ -1,4 +1,4 @@
-import logo from '../../logo.svg';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import './App.css';
 import SearchBar from '../SearchBar/SearchBar';
 import SearchResults from '../SearchResults/SearchResults';
@@ -6,12 +6,7 @@ import Playlist from '../Playlist/Playlist';
 import React, { useState, useEffect, useRef } from 'react';
 import * as helperFunctions from '../../helperFunctions';
 import { saveAs } from 'file-saver';
-
-const handleDownload = (text) => {
-  const file = new Blob([text], { type: 'text/plain;charset=utf-8' });
-  saveAs(file, 'debug.txt');
-};
-
+import { faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
 
 
 const clientId = 'a80c55af62d544179f100356c2cad383';
@@ -188,7 +183,7 @@ function App() {
     <div className='reset-request'>
       <h2>Time Remaining: {count} min</h2>
       <h3>Please refresh access token</h3>
-      <button className = 'refresh' onClick={refresh}>Refresh</button>
+      <button className='refresh' onClick={refresh}>Refresh</button>
     </div>
   );
 
@@ -212,11 +207,18 @@ function App() {
   const logoutPage = (
     <div className='App'>
       <header>
-        <button className = 'logout' onClick={logout}>Logout</button>
+        <button className = 'logout logout-main' onClick={logout}>Logout</button>
+        <button className='logout logout-alt' onClick={logout}>
+          <FontAwesomeIcon className = 'icon' icon={faRightFromBracket} />
+        </button>
         <h1>Ja<span className='mmm'>mmm</span>ing</h1>
         <div className='expire-container'>
           <h2 className='expiration'>Access expires in:</h2>
           <h3 className='count'>{count} minutes</h3>
+        </div>
+        <div className = 'expire-container-alt'>
+          <h2 className='expiration'>Remaining: </h2>
+          <h3 className='count'>{count} min</h3>
         </div>
       </header>
       <main>

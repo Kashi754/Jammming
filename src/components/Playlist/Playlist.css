@@ -5,7 +5,7 @@
     display: flex;
     box-sizing: border-box;
     flex-direction: column;
-    width: 25vw;
+    width: 100%;
     background-color: rgba(0, 0, 0, 0.4);
     padding: 1rem 2rem;
     height: 100%;
@@ -65,3 +65,35 @@
                 box-shadow .5s ease-out;
 }
 
+@media only screen and (max-width: 1270px) {
+    #playlistName {
+        font-size: 2rem;
+        height: 3rem;
+    }
+}
+
+@media only screen and (max-width: 1178px) {
+    #playlistName {
+        font-size: 2.5rem;
+        height: 5rem;
+    }
+}
+
+@media only screen and (max-width: 430px) {
+    #playlistName {
+        height: 3rem;
+        font-size: 2rem;
+        margin-top: 0;
+    }
+
+    .save-button {
+        font-size: 1rem;
+    }
+}
+
+@media only screen and (max-width: 376px) {
+    #playlistName {
+        font-size: 1.75rem;
+        height: 3rem;
+    }
+}

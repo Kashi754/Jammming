@@ -6,8 +6,9 @@ form {
     display: flex;
     flex-direction: column;
     width: 25vw;
+    min-width: 250px;
     align-items: center;
-    margin-bottom: 8rem;
+    padding-bottom: 8rem;
 }
 
 input:-webkit-autofill,
@@ -60,6 +61,12 @@ select:autofill:focus {
     font-weight: bold;
 }
 
+@media only screen and (max-width: 1040px) {
+    #search {
+        font-size: 1.5rem;
+    }
+}
+
 #search::placeholder {
     color: rgba(0, 0, 0, 0.527);
 }
@@ -91,4 +98,26 @@ select:autofill:focus {
     box-shadow: 0 0 10px black inset;
     transition: background-color .5s ease-out,
                 box-shadow .5s ease-out;
+}
+
+@media only screen and (max-width: 750px) {
+    form {
+        padding-bottom: 2rem;
+    }
+
+    .search-button {
+        margin-top: 0;
+    }
+}
+
+@media only screen and (max-width: 430px) {
+    #playlistName {
+        height: 3rem;
+        font-size: 2rem;
+        margin-top: 0;
+    }
+
+    .search-button {
+        font-size: 1rem;
+    }
 }
