@@ -214,6 +214,7 @@ function generateRandomString(length) {
   
     let body = new URLSearchParams({
     grant_type: 'refresh_token',
+    refresh_token: refreshToken,
     client_id: clientId,
     });
   

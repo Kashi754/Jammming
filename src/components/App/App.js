@@ -30,7 +30,7 @@ function App() {
   const [playlistTracks, setPlaylistTracks] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
   const [accessToken, setAccessToken] = useState('');
-  const [refresh_token, setRefreshToken] = useState('');
+  const [refreshToken, setRefreshToken] = useState('');
   const [expiresIn, setExpiresIn] = useState(null);
   const [count, setCount] = useState(0);
   const [userId, setUserId] = useState('');
@@ -50,7 +50,7 @@ function App() {
     if (expiresIn) {
       timer = !timer && setInterval(() => {
         setCount(prevCount => prevCount - 1);
-      }, 1000);
+      }, 60000);
 
       if(count === 0) {
         clearInterval(timer);
@@ -96,6 +96,14 @@ function App() {
       window.removeEventListener('beforeUnload', handleClose);
     };
   },[]);
+
+  async function refresh() {
+    const response = await helperFunctions.refreshAccessToken(refreshToken);
+    setAccessToken(response.accessToken);
+    setRefreshToken(response.refreshToken);
+    setExpiresIn(response.expiresIn);
+    setCount(response.expiresIn);
+  }
   
   const login = () => {
     localStorage.setItem('login_request', 1);
@@ -176,8 +184,16 @@ function App() {
     prevPage = results[3];
   }
 
+  const refreshScreen = (
+    <div className='reset-request'>
+      <h2>Time Remaining: {count} min</h2>
+      <h3>Please refresh access token</h3>
+      <button className = 'refresh' onClick={refresh}>Refresh</button>
+    </div>
+  );
+
   const loginPage = (
-    <div className='App'>
+    <>
       <header>
         <h1>Ja<span className='mmm'>mmm</span>ing</h1>
       </header>
@@ -190,7 +206,7 @@ function App() {
           </div>
         </div> 
       </main>
-    </div>
+    </>
   );
 
   const logoutPage = (
@@ -198,7 +214,10 @@ function App() {
       <header>
         <button className = 'logout' onClick={logout}>Logout</button>
         <h1>Ja<span className='mmm'>mmm</span>ing</h1>
-        <h2 className='expiration'>Access expires in: {count}</h2>
+        <div className='expire-container'>
+          <h2 className='expiration'>Access expires in:</h2>
+          <h3 className='count'>{count} minutes</h3>
+        </div>
       </header>
       <main>
         <SearchBar handleSubmit={handleSubmit} />
@@ -222,7 +241,15 @@ function App() {
     </div>
   );
 
-  return !accessToken? loginPage: logoutPage;
+  return !accessToken? (
+    <div className='App'>
+        {loginPage}
+    </div>): (
+    <div className='App'>
+      {count <= 5? refreshScreen: null}
+      {logoutPage}
+    </div>)
+  ;
 }
 
 export default App;
