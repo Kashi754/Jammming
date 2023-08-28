@@ -17,6 +17,7 @@ function SearchBar(props) {
                 value={search}
                 onChange={e => setSearch(e.target.value)}
                 placeholder='Search for a song'
+                spellCheck='false'
             />
             <button className='search-button' type='submit'>SEARCH</button>
         </form>

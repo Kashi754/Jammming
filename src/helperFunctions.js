@@ -26,7 +26,7 @@ export async function getUserId(token) {
             /* localStorage.setItem('user_id', userId); */
         })
         .catch(error => {
-            console.log(error);
+            console.error(error);
         });
     return response;
 }
@@ -55,7 +55,7 @@ export function createPlaylist(userId, playlistName, uriArray, token) {
             submitPlaylist(playlistId, uriArray, token);
         })
         .catch(error => {
-            console.log(error);
+            console.error(error);
         })    
 }
 
@@ -80,7 +80,7 @@ async function submitPlaylist(playlistId, uriArray, token) {
         }
         throw new Error('Unable to Submit Items to Playlist!');
     } catch (error) {
-        console.log(error);
+        console.error(error);
     }
 }
 
@@ -112,7 +112,7 @@ export async function getTracks(token, uri) {
         }
         throw new Error('Unable to fetch tracks from Spotify!');
     } catch(error) {
-        console.log(error);
+        console.error(error);
     }
 }
 
@@ -197,45 +197,50 @@ function generateRandomString(length) {
           return response.json();
         })
         .then(data => {
-          localStorage.setItem('access_token', data.access_token);
-          /* localStorage.setItem('refresh_token', data.refresh_token);
-          localStorage.setItem('expires_at', data.expires_at); */
-          return data.access_token;
+          return {
+            accessToken: data.access_token, 
+            refreshToken: data.refresh_token, 
+            expiresIn: data.expires_in / 60
+          };
         })
         .catch(error => {
-          console.log(error);
+          console.error(error);
         });
   
         return response;
   }
+
+  export async function refreshAccessToken(refreshToken) {
   
-  export async function refreshToken() {
-    fetch('https://accounts.spotify.com/api/token', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
-      },
-      body: new URLSearchParams({
-        clientId,
-        grant_type: 'refresh_token',
-        refresh_token: refreshToken,
-      }),
+    let body = new URLSearchParams({
+    grant_type: 'refresh_token',
+    client_id: clientId,
+    });
+  
+  
+    const response = await fetch('https://accounts.spotify.com/api/token', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: body
     })
         .then(response => {
-        if (!response.ok) {
-          throw new Error('HTTP status ' + response.status);
-        }
-        return response.json();
-      })
-      .then(data => {
-        localStorage.setItem('access_token', data.access_token);
-        localStorage.setItem('refresh_token', data.refresh_token);
-        localStorage.setItem('expires_at', data.expires_at);
-      })
-      .catch(error => {
-        console.error('Error:', error);
-      });    
+          if (!response.ok) {
+            throw new Error('HTTP status ' + response.status);
+          }
+          return response.json();
+        })
+        .then(data => {
+          return {
+            accessToken: data.access_token, 
+            refreshToken: data.refresh_token, 
+            expiresIn: data.expires_in / 60
+          };
+        })
+        .catch(error => {
+          console.error(error);
+        });
+  
+        return response;
   }
-  
-  
-  

@@ -23,43 +23,71 @@ let nextPage = '';
 
 function App() {
 
-  let refreshToken = localStorage.getItem('refresh_token') || null;
-  let expiresAt = localStorage.getItem('expires_at') || null;
+/*   let refreshToken = localStorage.getItem('refresh_token') || null;
+  let expiresAt = localStorage.getItem('expires_at') || null; */
 
   const [playlistName, setPlaylistName] = useState('');
   const [playlistTracks, setPlaylistTracks] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
   const [accessToken, setAccessToken] = useState('');
+  const [refresh_token, setRefreshToken] = useState('');
+  const [expiresIn, setExpiresIn] = useState(null);
+  const [count, setCount] = useState(0);
   const [userId, setUserId] = useState('');
   
   let uriArray = useRef([]);
   const initialized = useRef(false);
   const playlistId = useRef('');
+  let timer;
 
   function handleClose() {
     if(localStorage.getItem('access_token')) {
       logout();
     }
   }
+
+  function updateCount() {
+    if (expiresIn) {
+      timer = !timer && setInterval(() => {
+        setCount(prevCount => prevCount - 1);
+      }, 1000);
+
+      if(count === 0) {
+        clearInterval(timer);
+        logout();
+      }
+    }
+  }
+
+  useEffect(() => {
+    updateCount();
+
+    return () => {
+      clearInterval(timer);
+    };
+  },[count]);
   
   useEffect(() => {
     const userAuthentication = async () => {
-      await helperFunctions.requestAccessToken()
-        .then(token => {
-          setAccessToken(token);
-          return helperFunctions.getUserId(token);
-        })
-        .then(id => {
-          console.log(id);
-          setUserId(id);
-        })
-        .catch(error => console.log(error));
+
+      try {
+        const response = await helperFunctions.requestAccessToken();
+        setAccessToken(response.accessToken);
+        setRefreshToken(response.refreshToken);
+        setExpiresIn(response.expiresIn);
+        setCount(response.expiresIn);
+        
+        const id = await helperFunctions.getUserId(response.accessToken);
+        setUserId(id);
+      } catch (error) {
+        console.error(error);
+      }
     };
 
     if (!initialized.current && localStorage.getItem('login_request') == '1') {
       userAuthentication();
       initialized.current = true;
-      localStorage.getItem('login_request', 0);
+      localStorage.setItem('login_request', null);
     }
 
     window.addEventListener('beforeunload', handleClose);
@@ -78,12 +106,8 @@ function App() {
     setAccessToken('');
     initialized.current = false;
     localStorage.clear();
+    clearInterval(timer);
   };
-
-  /* window.addEventListener("beforeunload", (event) => {
-    logout();
-    console.log("You have logged out!");
-  }); */
 
   function updatePlaylistName(e) {
     setPlaylistName(e.target.value);
@@ -155,13 +179,15 @@ function App() {
   const loginPage = (
     <div className='App'>
       <header>
-        <button onClick={login}>Login</button> : 
         <h1>Ja<span className='mmm'>mmm</span>ing</h1>
       </header>
 
       <main>
-        <div className="App-playlist">
-          <h2>Please Log-in to Spotify</h2>
+        <div className="login-request">
+          <div className='login-container'>
+            <h2>Please Log-in to Spotify</h2>
+            <button className = 'login' onClick={login}>Login</button>
+          </div>
         </div> 
       </main>
     </div>
@@ -170,8 +196,9 @@ function App() {
   const logoutPage = (
     <div className='App'>
       <header>
-        <button onClick={logout}>Logout</button>
+        <button className = 'logout' onClick={logout}>Logout</button>
         <h1>Ja<span className='mmm'>mmm</span>ing</h1>
+        <h2 className='expiration'>Access expires in: {count}</h2>
       </header>
       <main>
         <SearchBar handleSubmit={handleSubmit} />

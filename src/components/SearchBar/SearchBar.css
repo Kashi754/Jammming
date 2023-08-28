@@ -10,6 +10,39 @@ form {
     margin-bottom: 8rem;
 }
 
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 1000px 1000px rgb(40, 39, 43) inset;
+    -webkit-text-fill-color: rgb(223, 223, 223);
+    caret-color: rgba(223, 223, 223, 0.281);
+    font-family: 'Kanit', sans-serif;
+    font-weight: bold;
+}
+
+input:autofill,
+input:autofill:hover, 
+input:autofill:focus,
+textarea:autofill,
+textarea:autofill:hover,
+textarea:autofill:focus,
+select:autofill,
+select:autofill:hover,
+select:autofill:focus {
+    -webkit-text-fill-color: rgb(223, 223, 223);
+    transition: background-color 5000s ease-in-out 0s;
+    font-size: 2rem;
+    caret-color: rgba(223, 223, 223, 0.281);
+    font-family: 'Kanit', sans-serif;
+    font-weight: bold;
+}
+
 #search {
     width: 100%;
     height: 3rem;
@@ -44,9 +77,18 @@ form {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
     font-family: 'Kanit', sans-serif;
     font-weight: 500;
+    transition: background-color .5s ease-in,
+                box-shadow .5s ease-in-out;
 }
 
 .search-button:hover {
     background-color: rgba(240, 240, 240, 0.63);
     box-shadow: 0 0 10px black;
+}
+
+.search-button:active {
+    background-color: rgba(240, 240, 240, 0.342);
+    box-shadow: 0 0 10px black inset;
+    transition: background-color .5s ease-out,
+                box-shadow .5s ease-out;
 }

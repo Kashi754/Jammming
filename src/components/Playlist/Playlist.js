@@ -18,6 +18,7 @@ function Playlist(props) {
                 value={props.playlistName} 
                 onChange={props.onNameChange}
                 placeholder='Playlist Name'
+                spellCheck='false'
             />
             <Tracklist 
                 tracks={props.playlistTracks}

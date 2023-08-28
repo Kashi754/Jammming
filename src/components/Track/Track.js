@@ -35,13 +35,25 @@ function Track(props) {
 
     return (
         <div className='track'>
-            <div className = 'track-information'>
-                <h3>{props.track.name}</h3>
-                <p>
-                    {props.track.artists[0].name} | {props.track.album.name}
-                </p>
+            
+            <div className = 'image-container'>
+                <img src={props.track.album.images[2]['url']} 
+                    alt={`${props.track.name} by ${props.track.artists[0].name}`}
+                />
             </div>
-            {trackAction()}
+            <div className = 'track-text'>
+                <div className='name-container'>
+                    <h3>{props.track.name}</h3>
+                </div>
+                <div className='album-container'>
+                    <p>
+                        {props.track.artists[0].name} | {props.track.album.name}
+                    </p>
+                </div>
+            </div>
+            <div className = 'action-container'>
+                {trackAction()}
+            </div>
         </div>
     );
 }

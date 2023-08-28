@@ -4,6 +4,7 @@
   padding-bottom: 15rem;
   background-image: url(./Images/technology-background.webp);
   background-size:cover;
+  background-position: center;
   height: fit-content;
 }
 

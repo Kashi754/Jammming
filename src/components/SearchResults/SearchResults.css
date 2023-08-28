@@ -23,3 +23,40 @@
     margin-bottom: 1rem;
     font-family: 'Kanit', sans-serif;
 }
+
+.page-buttons {
+    display: flex;
+    box-sizing: border-box;
+    width: 100%;
+    align-self: center;
+    justify-content: space-around;
+    padding: 2.5rem 10%;
+}
+
+.pageButton {
+    background-color: rgba(240, 240, 240, 0.377);
+    width: fit-content;
+    border: none;
+    border-radius: 2rem;
+    align-self: center;
+    font-size: 1.5rem;
+    color: rgb(0, 0, 0);
+    padding: .75rem 1.5rem;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    font-family: 'Kanit', sans-serif;
+    font-weight: 500;
+    transition: background-color .5s ease-in,
+                box-shadow .5s ease-in;
+}
+    
+.pageButton:hover {
+    background-color: rgba(240, 240, 240, 0.63);
+    box-shadow: 0 0 10px black;
+}
+
+.pageButton:active {
+    background-color: rgba(240, 240, 240, 0.342);
+    box-shadow: 0 0 10px black inset;
+    transition: background-color .5s ease-out,
+                box-shadow .5s ease-out;
+}
