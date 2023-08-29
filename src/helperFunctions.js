@@ -1,5 +1,4 @@
 import { saveAs } from 'file-saver';
-import Tracklist from './components/TrackList/Tracklist';
 
 
 const baseUrl = 'https://api.spotify.com/v1';
@@ -23,7 +22,6 @@ export async function getUserId(token) {
         })
         .then(data => {
             return data.id;
-            /* localStorage.setItem('user_id', userId); */
         })
         .catch(error => {
             console.error(error);
@@ -143,7 +141,8 @@ function generateRandomString(length) {
   }
   
   const clientId = 'a80c55af62d544179f100356c2cad383';
-  const redirectUri = 'http://localhost:3000/';
+  const redirectUri = 'https://Kashi754.github.io/Jammming'
+ /*  const redirectUri = 'http://localhost:3000/'; */
   
   let codeVerifier = generateRandomString(128);
   

@@ -5,12 +5,10 @@ import SearchResults from '../SearchResults/SearchResults';
 import Playlist from '../Playlist/Playlist';
 import React, { useState, useEffect, useRef } from 'react';
 import * as helperFunctions from '../../helperFunctions';
-import { saveAs } from 'file-saver';
 import { faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
 
 
-const clientId = 'a80c55af62d544179f100356c2cad383';
-const redirectUri = 'http://localhost:3000/';
+
 
 let currentPage = '';
 let prevPage = '';
