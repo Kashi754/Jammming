@@ -195,11 +195,17 @@ function App() {
   };
 
   async function handleSubmit(e, search) {
+    setSearchResults([]);
     e.preventDefault();
     const uri = helperFunctions.urlBuilder(search)
     const results = await helperFunctions.getTracks(accessToken, uri);
     setPlaylistName('');
-    setSearchResults(results[0]);
+    const tracks = results[0];
+    tracks.forEach(track => {
+      if(playlistTracks.findIndex(i => i.id === track.id) === -1) {
+        setSearchResults((prev) => [...prev, track]);
+      }
+    })
     currentPage = uri;
     nextPage = results[1];
   };

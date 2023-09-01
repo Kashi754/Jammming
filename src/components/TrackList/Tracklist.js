@@ -5,7 +5,6 @@ import './Tracklist.css';
 
 function Tracklist(props) {
 
-
     if(props.tracks.length !== 0) {
         return (
             <div className='TrackList'>
