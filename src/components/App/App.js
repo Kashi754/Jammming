@@ -16,9 +16,6 @@ let nextPage = '';
 
 function App() {
 
-/*   let refreshToken = localStorage.getItem('refresh_token') || null;
-  let expiresAt = localStorage.getItem('expires_at') || null; */
-
   const [playlistName, setPlaylistName] = useState('');
   const [playlistTracks, setPlaylistTracks] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
@@ -195,11 +192,17 @@ function App() {
   };
 
   async function handleSubmit(e, search) {
+    setSearchResults([]);
     e.preventDefault();
     const uri = helperFunctions.urlBuilder(search)
     const results = await helperFunctions.getTracks(accessToken, uri);
     setPlaylistName('');
-    setSearchResults(results[0]);
+    const tracks = results[0];
+    tracks.forEach(track => {
+      if(playlistTracks.findIndex(i => i.id === track.id) === -1) {
+        setSearchResults((prev) => [...prev, track]);
+      }
+    })
     currentPage = uri;
     nextPage = results[1];
   };

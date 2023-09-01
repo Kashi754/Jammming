@@ -155,8 +155,8 @@ function generateRandomString(length) {
   }
   
   const clientId = 'a80c55af62d544179f100356c2cad383';
-  /* const redirectUri = 'https://Kashi754.github.io/Jammming' */
-  const redirectUri = 'http://localhost:3000/';
+  const redirectUri = 'https://Kashi754.github.io/Jammming'
+  /* const redirectUri = 'http://localhost:3000/'; */
   
   let codeVerifier = generateRandomString(128);
   
