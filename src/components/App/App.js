@@ -27,12 +27,42 @@ function App() {
   const [expiresIn, setExpiresIn] = useState(null);
   const [count, setCount] = useState(0);
   const [userId, setUserId] = useState('');
+  const [loading, setLoading] = useState();
+  const [url, setUrl] = useState('');
+  const [stop, setStop] = useState(0);
+  const audio = document.getElementById('audio');
   
   let uriArray = useRef([]);
   const initialized = useRef(false);
   const playlistId = useRef('');
   let timer;
 
+  //Functionality for playing track samples
+  //------------------------------------
+  useEffect(() => {
+      if(url !== ''){
+          audio.play();
+      }
+  },[url]);
+
+  function playTrack(newUrl) {
+      setStop(1);
+
+      if(newUrl !== url) {
+          setUrl(newUrl);
+      }
+      else {
+          audio.play();
+      }   
+  };
+  
+  function pauseTrack() {
+      audio.pause();
+  };
+  //----------------------------------
+
+  //User log-in, log-out, and access token management
+  //-----------------------------------
   function handleClose() {
     if(localStorage.getItem('access_token')) {
       logout();
@@ -109,6 +139,7 @@ function App() {
     localStorage.clear();
     clearInterval(timer);
   };
+  //--------------------------------
 
   function updatePlaylistName(e) {
     setPlaylistName(e.target.value);
@@ -144,11 +175,23 @@ function App() {
   };
   
   async function savePlaylist(playlistName) {
-    helperFunctions.createPlaylist(userId, playlistName, uriArray.current, accessToken);
-    setPlaylistTracks([]);
-    uriArray.current = [];
-    playlistId.current = '';
-    setPlaylistName('');
+    setLoading(true);
+    helperFunctions.createPlaylist(userId, playlistName, uriArray.current, accessToken)
+      .then(response => {
+        setLoading(false);
+        if(!response.ok) {
+          alert(response.response);
+        }
+        else{
+          setPlaylistTracks([]);
+          uriArray.current = [];
+          playlistId.current = '';
+          setPlaylistName('');
+        }
+      })
+      .catch(error => {
+        console.error(error);
+      });
   };
 
   async function handleSubmit(e, search) {
@@ -227,7 +270,10 @@ function App() {
             prevPage={prevPage}
             nextPage={nextPage}
             changePage={changePage}
-            onAdd={addTrack} 
+            onAdd={addTrack}
+            playTrack={playTrack}
+            pauseTrack={pauseTrack}
+            stop={stop}
           />
           <Playlist 
             playlistName={playlistName}
@@ -235,6 +281,10 @@ function App() {
             onNameChange={updatePlaylistName}
             onRemove={removeTrack}
             onSave={savePlaylist}
+            loading={loading}
+            playTrack={playTrack}
+            pauseTrack={pauseTrack}
+            stop={stop}
           />
         </div>
       </main>
@@ -247,6 +297,7 @@ function App() {
     </div>): (
     <div className='App'>
       {count <= 5? refreshScreen: null}
+      <audio id='audio' src={url}></audio>
       {logoutPage}
     </div>)
   ;

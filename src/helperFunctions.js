@@ -29,32 +29,41 @@ export async function getUserId(token) {
     return response;
 }
 
-export function createPlaylist(userId, playlistName, uriArray, token) {  
+export async function createPlaylist(userId, playlistName, uriArray, token) {  
     const response = fetch(baseUrl + `/users/${userId}/playlists`, {
-        method: 'POST',
-        headers: {
-            Authorization: 'Bearer ' + token,
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            'name': playlistName,
-            'public': 'true'
-        })
+      method: 'POST',
+      headers: {
+          Authorization: 'Bearer ' + token,
+          'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+          'name': playlistName,
+          'public': 'true'
+      })
 
     })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Unable to Create Playlist!');
-            }
-            return response.json();
-        })
-        .then(data => {
-            let playlistId = data.id;
-            submitPlaylist(playlistId, uriArray, token);
-        })
-        .catch(error => {
-            console.error(error);
-        })    
+      .then(response => {
+          if (!response.ok) {
+              throw new Error('Unable to Create Playlist!');
+          }
+          return response.json();
+      })
+      .then(async data => {
+          let playlistId = data.id;
+          const response = await submitPlaylist(playlistId, uriArray, token);
+          return {
+            ok: true,
+            response: response
+          };
+      })
+      .catch(error => {
+          console.error(error);
+          return {
+            ok: false,
+            response: error
+          };
+      })  
+    return response;
 }
 
 async function submitPlaylist(playlistId, uriArray, token) {
@@ -79,7 +88,12 @@ async function submitPlaylist(playlistId, uriArray, token) {
         throw new Error('Unable to Submit Items to Playlist!');
     } catch (error) {
         console.error(error);
+        return {
+          ok: false,
+          response: error
+        };
     }
+    return {ok: true}
 }
 
 export function urlBuilder(query, offset = 0) {

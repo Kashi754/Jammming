@@ -1,7 +1,6 @@
-import React, {useState, useCallback} from 'react';
+import React from 'react';
 import Tracklist from '../TrackList/Tracklist';
 import './Playlist.css';
-import { func } from 'prop-types';
 
 function Playlist(props) {
 
@@ -10,8 +9,26 @@ function Playlist(props) {
         props.onSave(props.playlistName);
     }
 
+    const loadingScreen = () => {
+        return (
+            <div className="center">
+                <div className="wave"></div>
+                <div className="wave"></div>
+                <div className="wave"></div>
+                <div className="wave"></div>
+                <div className="wave"></div>
+                <div className="wave"></div>
+                <div className="wave"></div>
+                <div className="wave"></div>
+                <div className="wave"></div>
+                <div className="wave"></div>
+            </div>
+        );
+    };
+
     return (
         <form className='Playlist' onSubmit={handleSubmit}>
+            {props.loading && loadingScreen()}
             <input 
                 id='playlistName' 
                 type='text' 
@@ -24,6 +41,9 @@ function Playlist(props) {
                 tracks={props.playlistTracks}
                 isRemoval={true}
                 onRemove={props.onRemove}
+                playTrack={props.playTrack}
+                pauseTrack={props.pauseTrack}
+                stop={props.stop}
             />
             <button className='save-button' type='submit'>SAVE TO SPOTIFY</button>
         </form>

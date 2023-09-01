@@ -45,11 +45,17 @@ function Track(props) {
         const children = event.currentTarget.children;
         const element = state === 'play'? children[0] : children[1];
         const newElement = state === 'play'? children[1]: children[0];
+        const playButtons = document.getElementsByClassName('play');
+        const pauseButtons = document.getElementsByClassName('pause');
+        for(var i = 0; i < playButtons.length; i++) {
+            pauseButtons[i].style.opacity = 0;
+            playButtons[i].style.opacity = 1;        
+        }
         
         element.style.opacity = 0;
         setTimeout(() => {
             if(state === 'play') {
-                props.playTrack(props.track.preview_url, props.index);
+                props.playTrack(props.track.preview_url);
                 setState('pause');
             } else {
                 props.pauseTrack();
@@ -62,7 +68,7 @@ function Track(props) {
     return (
         <div className='track'>      
             <div className = 'image-container'>
-                <button className="play-button" onClick={handlePlay}>
+                <button className="play-button" type='button' onClick={handlePlay}>
                     <FontAwesomeIcon className='icon play' id='play' icon={faPlay} />
                     <FontAwesomeIcon className='icon pause' id='pause' icon={faPause} />
                     <FontAwesomeIcon className='icon' id='circle' icon={faCircle} />

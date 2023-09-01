@@ -41,7 +41,13 @@ function SearchResults(props) {
     return (
         <div className='SearchResults'>
             <h2>Results</h2>
-            <Tracklist tracks={props.searchResults} onAdd={props.onAdd} />
+            <Tracklist 
+                tracks={props.searchResults} 
+                onAdd={props.onAdd} 
+                playTrack={props.playTrack}
+                pauseTrack={props.pauseTrack}
+                stop={props.stop}
+                />
             <div className='page-buttons'>
                 {renderPreviousButton(props)}
                 {renderNextButton(props)}   
